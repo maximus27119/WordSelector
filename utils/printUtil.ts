@@ -1,6 +1,6 @@
-import chalk from "chalk";
+import chalk from 'chalk';
 
-const colors = {
+const colors: Record<string, (text: string) => string> = {
   black: chalk.black,
   red: chalk.red,
   green: chalk.green,
@@ -19,7 +19,12 @@ const colors = {
   whiteBright: chalk.whiteBright
 };
 
-export function logMessage (color: string, text: string, ...boldValues: number[] | string[]): void {
+export function logStyledMessage(color: string, text: string, ...boldValues: number[] | string[]): void {
   const formattedText = text.replace(/\{(\d+)\}/g, (_, i) => chalk.bold(boldValues[i]));
   console.log(colors[color](formattedText));
+}
+
+export function logStyledError(text: string, ...boldValues: number[] | string[]): void {
+  const formattedText = text.replace(/\{(\d+)\}/g, (_, i) => chalk.bold(boldValues[i]));
+  console.log(colors.red(formattedText));
 }

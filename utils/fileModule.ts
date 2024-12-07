@@ -1,19 +1,21 @@
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync } from 'fs';
+import { logStyledError } from './printUtil';
 
 export function processString(input: string): string[] {
   return input
-    .replace(/[^a-zA-Zа-яА-Я\s-]/g, " ") // Удаляем все символы, кроме букв, пробелов и дефисов
-    .replace(/\s+/g, " ") // Убираем лишние пробелы
-    .trim() // Удаляем пробелы в начале и конце строки
-    .split(" "); // Разделяем строку по пробелам
+    .replace(/[^a-zA-Zа-яА-Я\s-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .split(' ');
 }
 
 export function readTextFile(fileName: string): string {
   try {
-    return readFileSync(fileName, { encoding: "utf8" });
+    return readFileSync(fileName, { encoding: 'utf8' });
   } catch (error) {
-    console.error(`Error while reading file (${fileName}):`, error);
-    return "";
+    logStyledError(`Error while reading file (${fileName}):`);
+    console.error(error);
+    return '';
   }
 }
 
@@ -21,16 +23,18 @@ export function writeInJson(fileName: string, data: any): void {
   try {
     writeFileSync(fileName, JSON.stringify(data, null, 2));
   } catch (error) {
-    console.error(`Error while writing JSON file (${fileName}):`, error);
+    logStyledError(`Error while writing JSON file (${fileName}):`);
+    console.error(error);
   }
 }
 
 export function readJsonFile(fileName: string): Array<string> {
   try {
-    const data: string = readFileSync(fileName, { encoding: "utf8" });
+    const data: string = readFileSync(fileName, { encoding: 'utf8' });
     return JSON.parse(data);
   } catch (error) {
-    console.error(`Error while reading/parsing JSON file (${fileName}):`, error);
+    logStyledError(`Error while reading/parsing JSON file (${fileName}):`);
+    console.error(error);
     return [];
   }
 }

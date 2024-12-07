@@ -1,14 +1,19 @@
-import select from "@inquirer/select";
-import chalk from "chalk";
+import select from '@inquirer/select';
+import chalk from 'chalk';
+import { logStyledError } from './printUtil';
 
 type Words = string[];
 
+type TestChoice = {
+  name: string;
+  value: string;
+};
+
+type TestChoices = TestChoice[];
+
 type Question = {
   message: string;
-  choices: {
-    name: string;
-    value: string;
-  }[];
+  choices: TestChoices;
 };
 
 type SessionHistoryItem = {
@@ -23,6 +28,8 @@ type TestResult = {
   skippedWords: string[];
 };
 
+const testChoices: string[] = ['Skip', 'Learn', 'Back', 'Exit'];
+
 const questionOptions = {
   clearPromptOnDone: true
 };
@@ -35,47 +42,53 @@ export async function startTest(words: string[]): Promise<TestResult> {
   const skippedWords: Words = [];
 
   try {
-    for (let i = 0; i < wordsToTest.length; i++) {
+    for (let i = 0; i < wordsToTest.length; ) {
       const currentWord = wordsToTest[i];
       const answer = await askNextWord(currentWord, i + 1);
 
-      if (answer === "learn" || answer === "skip") {
+      if (answer === 'learn' || answer === 'skip') {
         currentSessionHistory.push({ word: currentWord, action: answer });
-      } else if (answer === "back" && i > 0) {
+        i++;
+      } else if (answer === 'back' && i > 0) {
         currentSessionHistory.pop();
-        i = i - 2;
-      } else if (answer === "exit") {
+        i--;
+      } else if (answer === 'exit') {
         break;
       }
     }
   } catch (error) {
-    console.error("An error has occurred:", error);
+    logStyledError('An error has occurred:');
+    console.error(error);
   }
 
-  currentSessionHistory.forEach((historyItem) => {
-    if (historyItem.action === "learn") {
+  currentSessionHistory.forEach((historyItem: SessionHistoryItem) => {
+    if (historyItem.action === 'learn') {
       savedWords.push(historyItem.word);
-    } else if (historyItem.action === "skip") {
+    } else if (historyItem.action === 'skip') {
       skippedWords.push(historyItem.word);
     }
   });
   return { savedWords, skippedWords };
 }
 
-async function askNextWord(word: string, index?: number): Promise<string> {
-  return await select(prepareQuestion(word, index), questionOptions);
+async function askNextWord(word: string, wordNumber?: number): Promise<string> {
+  return select(prepareQuestion(word, wordNumber), questionOptions);
 }
 
-function prepareQuestion(message: string, index?: number): Question {
-  const styledMessage = `${chalk.bold.red('№' + index)} ${chalk.bold.red(message)}`;
+function prepareQuestion(message: string, wordNumber?: number): Question {
+  const styledMessage = `${chalk.bold.red('№' + wordNumber)} ${chalk.bold.red(message)}`;
 
   return {
     message: styledMessage,
-    choices: [
-      { name: "Skip", value: "skip" },
-      { name: "Learn", value: "learn" },
-      { name: "Back", value: "back" },
-      { name: "Exit", value: "exit" }
-    ]
+    choices: prepareTestChoices(testChoices)
   };
+}
+
+function prepareTestChoices(choices: string[]): TestChoices {
+  return choices.map((choice): TestChoice => {
+    return {
+      name: choice,
+      value: choice.toLowerCase()
+    };
+  });
 }
