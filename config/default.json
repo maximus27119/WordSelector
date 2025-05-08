@@ -1,0 +1,5 @@
+{
+    "inputFileName": "./input.txt",
+    "outputSavedFileName": "./output/saved.json",
+    "outputSkippedFileName": "./output/skipped.json"
+}

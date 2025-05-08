@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { logStyledError } from './printUtil';
+import { logStyledError } from '../utils/print.util';
 
 export function processString(input: string): string[] {
   return input
@@ -14,7 +14,6 @@ export function readTextFile(fileName: string): string {
     return readFileSync(fileName, { encoding: 'utf8' });
   } catch (error) {
     logStyledError(`Error while reading file (${fileName}):`);
-    console.error(error);
     return '';
   }
 }

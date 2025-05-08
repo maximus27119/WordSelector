@@ -1,6 +1,6 @@
 import select from '@inquirer/select';
 import chalk from 'chalk';
-import { logStyledError } from './printUtil';
+import { logStyledError } from '../utils/print.util';
 
 type Words = string[];
 
